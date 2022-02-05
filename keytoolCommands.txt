@@ -1,0 +1,37 @@
+keytool -genkey -alias youssfi -keyalg RSA -keystore youssfi.jks -keysize 2048
+keytool -export -alias youssfi -keystore youssfi.jks -rfc -file publickey.cert
+
+****************************************************************************
+
+C:\Docs2021\apps\crypto>keytool -genkey -alias youssfi -keyalg RSA -keystore youssfi.jks -keysize 2048
+Entrez le mot de passe du fichier de clés :
+Ressaisissez le nouveau mot de passe :
+Quels sont vos nom et prénom ?
+  [Unknown]:  youssfi
+Quel est le nom de votre unité organisationnelle ?
+  [Unknown]:  enset
+Quel est le nom de votre entreprise ?
+  [Unknown]:  enset
+Quel est le nom de votre ville de résidence ?
+  [Unknown]:  casa
+Quel est le nom de votre état ou province ?
+  [Unknown]:  maroc
+Quel est le code pays à deux lettres pour cette unité ?
+  [Unknown]:  ma
+Est-ce CN=youssfi, OU=enset, O=enset, L=casa, ST=maroc, C=ma ?
+  [non]:  oui
+
+Entrez le mot de passe de la clé pour <youssfi>
+        (appuyez sur Entrée s'il s'agit du mot de passe du fichier de clés) :
+
+Warning:
+Le fichier de clés JKS utilise un format propriétaire. Il est recommandé de migrer vers PKCS12, qui est un format standard de l'industr
+ie en utilisant "keytool -importkeystore -srckeystore youssfi.jks -destkeystore youssfi.jks -deststoretype pkcs12".
+
+C:\Docs2021\apps\crypto>keytool -export -alias youssfi -keystore youssfi.jks -rfc -file publickey.cert
+Entrez le mot de passe du fichier de clés :
+Certificat stocké dans le fichier <publickey.cert>
+
+Warning:
+Le fichier de clés JKS utilise un format propriétaire. Il est recommandé de migrer vers PKCS12, qui est un format standard de l'industr
+ie en utilisant "keytool -importkeystore -srckeystore youssfi.jks -destkeystore youssfi.jks -deststoretype pkcs12".
