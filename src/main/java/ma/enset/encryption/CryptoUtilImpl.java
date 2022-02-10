@@ -4,10 +4,7 @@ import com.sun.deploy.security.CertType;
 import javafx.scene.paint.CycleMethod;
 import org.apache.commons.codec.binary.Hex;
 
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
+import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 import java.io.FileInputStream;
@@ -114,9 +111,9 @@ public class CryptoUtilImpl {
         FileInputStream fileInputStream=new FileInputStream(fileName);
         CertificateFactory certificateFactory=CertificateFactory.getInstance("X.509");
         Certificate certificate = certificateFactory.generateCertificate(fileInputStream);
-        System.out.println("=================================");
-        System.out.println(certificate.toString());
-        System.out.println("=================================");
+        //System.out.println("=================================");
+        //System.out.println(certificate.toString());
+        //System.out.println("=================================");
         return certificate.getPublicKey();
     }
     public PrivateKey privateKeyFromJKS(String fileName, String jksPassWord, String alias) throws Exception {
@@ -127,5 +124,46 @@ public class CryptoUtilImpl {
         PrivateKey privateKey= (PrivateKey) key;
         return privateKey;
     }
+
+    public String hmacSign(byte[] data,String privateSecret) throws Exception {
+        SecretKeySpec secretKeySpec=new SecretKeySpec(privateSecret.getBytes(),"HmacSHA256");
+        Mac mac=Mac.getInstance("HmacSHA256");
+        mac.init(secretKeySpec);
+        byte[] signature = mac.doFinal(data);
+        return Base64.getEncoder().encodeToString(signature);
+    }
+    public boolean hmacVerify(String signedDocument,String secret) throws Exception {
+        SecretKeySpec secretKeySpec=new SecretKeySpec(secret.getBytes(),"HmacSHA256");
+        Mac mac=Mac.getInstance("HmacSHA256");
+        String[] splitedDocument=signedDocument.split("_.._");
+        String document=splitedDocument[0];
+        String documentSignature=splitedDocument[1];
+        mac.init(secretKeySpec);
+        byte[] sign = mac.doFinal(document.getBytes());
+        String base64Sign=Base64.getEncoder().encodeToString(sign);
+        return (base64Sign.equals(documentSignature));
+    }
+
+    public String rsaSign(byte[] data, PrivateKey privateKey) throws Exception {
+        Signature signature=Signature.getInstance("SHA256withRSA");
+        signature.initSign(privateKey,new SecureRandom());
+        signature.update(data);
+        byte[] sign = signature.sign();
+        return Base64.getEncoder().encodeToString(sign);
+    }
+
+    public boolean rsaSignVerify(String signedDoc,PublicKey publicKey) throws Exception {
+        Signature signature=Signature.getInstance("SHA256withRSA");
+        signature.initVerify(publicKey);
+        String[] data=signedDoc.split("_.._");
+        String document=data[0];
+        String sign=data[1];
+        byte[] decodeSignature = Base64.getDecoder().decode(sign);
+        signature.update(document.getBytes());
+        boolean verify = signature.verify(decodeSignature);
+        return verify;
+    }
+
+
 
 }
